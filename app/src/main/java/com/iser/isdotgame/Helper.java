@@ -16,4 +16,13 @@ public class Helper {
 
         return userUniqueId;
     }
+
+    public String getUsername(){
+        return "";
+    }
+
+    public String getHubUrl(){
+//        return "http://192.168.0.115:54343/mainhub";
+        return "http://192.168.1.253:54343/mainhub";
+    }
 }

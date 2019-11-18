@@ -11,8 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SinglePlayingActivity"></activity>
-        <activity android:name=".LookingCompatitorActivity" />
+        <activity android:name=".MultiPlayingActivity"></activity>
+        <activity android:name=".SinglePlayingActivity" />
+        <activity android:name=".LookingCompetitorActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

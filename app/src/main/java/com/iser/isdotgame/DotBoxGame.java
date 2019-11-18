@@ -15,6 +15,10 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
+import com.microsoft.signalr.HubConnection;
+import com.microsoft.signalr.HubConnectionBuilder;
+import com.microsoft.signalr.HubConnectionState;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +34,7 @@ public class DotBoxGame extends View {
     Line currentLine = null;
     boolean isInitialized = false;
     boolean isGameFinished = false;
+    boolean isSinglePlayerMode = true;
 
     private static final String ALineColor = "#32b92d";
     private static final String ABoxColor = "#54d04f";
@@ -40,16 +45,30 @@ public class DotBoxGame extends View {
     private Paint paint = new Paint();
     private Path path = new Path();
 
+    private int gameSessionId;
+    private Helper helper;
+    private boolean isItMyTurn = false;
+
     Canvas canvas;
 
     private Boxes boxes;
 
-    public DotBoxGame(Context context) {
+    public void setGameSessionId(int gameSessionId){
+        this.gameSessionId = gameSessionId;
+    }
+//    public void setHubConnection(HubConnection hubConnection) { this.hubConnection = hubConnection; }
+    public void setIsItMyTurn(boolean isItMyTurn) {
+        this.isItMyTurn = isItMyTurn;
+    }
+
+    public DotBoxGame(Context context, boolean isSinglePlayerMode, int gameSessionId, Helper helper) {
         super(context);
         this.context = context;
 
         rows = 7;
         cols = 7;
+
+        this.isSinglePlayerMode = isSinglePlayerMode;
 
         lines = new Lines();
         boxes = new Boxes(rows, cols);
@@ -61,6 +80,40 @@ public class DotBoxGame extends View {
         ((Activity) getContext()).getWindowManager()
                 .getDefaultDisplay()
                 .getMetrics(displayMetrics);
+
+//        this.hubConnection = hubConnection;
+        this.gameSessionId = gameSessionId;
+        this.helper = helper;
+
+        if (!isSinglePlayerMode) {
+////            hubConnection.stop();
+//
+//            this.priorAvtivityHubConnection = hubConnection;
+//            this.hubConnection = HubConnectionBuilder.create("http://192.168.1.253:54343/mainhub").build();
+//
+//            this.hubConnection.on("ItsMyTurn", () -> {
+//                isItMyTurn = true;
+//            });
+        }
+
+//        if (this.hubConnection != null) {
+//            if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+//                this.hubConnection.start().blockingAwait();
+//
+////            hubConnection.on("ItsMyTurn", () -> {
+////                isItMyTurn = true;
+////            });
+//        }
+    }
+
+    public void GameIsStarted(){
+//        this.priorAvtivityHubConnection.stop().blockingAwait();
+//        if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+//        {
+//            this.hubConnection.start().blockingAwait();
+//        }
+//        if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED)
+//            this.hubConnection.send("IsItMyTurn");
     }
 
     private void drawLayout(){
@@ -126,17 +179,19 @@ public class DotBoxGame extends View {
                 }
             }
 
+            int index = 0;
+
             // Calculate horizontal lines
             for (int row = 0; row < rows; row++) {
                 for (int col = 0; col < cols - 1; col++) {
-                    lines.Add(new Line(dots[row][col], dots[row][col + 1]));
+                    lines.Add(new Line(index++, dots[row][col], dots[row][col + 1]));
                 }
             }
 
             // Calculate vertical lines
             for (int row = 0; row < rows - 1; row++) {
                 for (int col = 0; col < cols; col++) {
-                    lines.Add(new Line(dots[row][col], dots[row + 1][col]));
+                    lines.Add(new Line(index++, dots[row][col], dots[row + 1][col]));
                 }
             }
 
@@ -492,7 +547,7 @@ public class DotBoxGame extends View {
 
     private void touch_start(float x, float y) {
         if (!isGameFinished) {
-            boolean canIPlayAgain = false;
+            boolean isItMyTurn = false;
             for (Line line : lines.getList()) {
                 if (line.startDot.getColCord() == line.endDot.getColCord()) {
                     // Line is horizontal
@@ -519,16 +574,22 @@ public class DotBoxGame extends View {
                         for (Box box : boxes.getBoxes(currentLine)) {
                             box.updateLine(currentLine);
                             if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
-                                canIPlayAgain = true;
+                                isItMyTurn = true;
                                 box.getPaint().setColor(Color.parseColor(ABoxColor));
                                 box.setOwner("1");
                             }
                         }
 
-                        if (!canIPlayAgain) {
-                            CheckIfGameIsFinished();
-                            doNextStep(currentLine);
-                            CheckIfGameIsFinished();
+                        if (!isItMyTurn) {
+                            if (isSinglePlayerMode) {
+                                CheckIfGameIsFinished();
+                                doNextStep(currentLine);
+                                CheckIfGameIsFinished();
+                            } else if (!isSinglePlayerMode) {
+                                // Send the selected lines infor to the competitor
+//                                hubConnection.send("IPlayedMyTurn", gameSessionId, helper.getUserUniqueId(), helper.getUsername(), currentLine.getIndex());
+                                this.isItMyTurn = false;
+                            }
                         }
                     }
                     break;
@@ -547,28 +608,31 @@ public class DotBoxGame extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+        if (isSinglePlayerMode || (!isSinglePlayerMode && isItMyTurn)) {
+            float x = event.getX();
+            float y = event.getY();
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                touch_start(x, y);
-                invalidate();
-                break;
-            case MotionEvent.ACTION_MOVE:
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    touch_start(x, y);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_MOVE:
 //                touch_move(x, y);
 //                invalidate();
 
-                break;
-            case MotionEvent.ACTION_UP:
-                touch_up(x, y);
-                invalidate();
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                break;
-        }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    touch_up(x, y);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    break;
+            }
 
-        return true;
+            return true;
+        }
+        return false;
     }
 
 //    public static float pxFromDp(final Context context, final float dp) {

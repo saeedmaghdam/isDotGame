@@ -4,19 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LookingCompatitorActivity"
+    tools:context=".LookingCompetitorActivity"
     android:id="@+id/mainLayout">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".MainActivity"/>
+        android:layout_height="wrap_content"
+        android:text="Send to user 6"
+        android:id="@+id/test"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints" />
 
     <LinearLayout
         android:id="@+id/gif"
@@ -36,7 +33,7 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center_vertical|center_horizontal"
             android:background="@null"
-            android:src="@drawable/lookingcompatitor"
+            android:src="@drawable/lookingcompetitor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/linearLayout" />

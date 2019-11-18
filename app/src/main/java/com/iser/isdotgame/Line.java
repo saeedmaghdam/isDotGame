@@ -11,15 +11,17 @@ public class Line {
     private Path path;
     private boolean isSelected = false;
     private String orientation;
+    private int index;
 
     public boolean getIsSelected(){return isSelected;}
     public void setIsSelected(boolean val){isSelected = val;}
     public String getOrientation(){return orientation;}
 //    public void setOrientation(String val){orientation = val;}
 
-    public Line(Dot startDot, Dot endDot) {
+    public Line(int index, Dot startDot, Dot endDot) {
         paint = new Paint();
         path = new Path();
+        setIndex(index);
 
         this.startDot = startDot;
         this.endDot = endDot;
@@ -58,6 +60,9 @@ public class Line {
 //        path.moveTo(startDot.getColCord(), startDot.getRowCord());
 //        path.lineTo(endDot.getColCord(), endDot.getRowCord());
 //    }
+
+    public int getIndex() {return index;}
+    public void setIndex(int index){this.index = index;}
 
     @Override
     public boolean equals(Object o) {

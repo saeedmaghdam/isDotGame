@@ -9,7 +9,6 @@ import android.widget.Button;
 
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
-import com.microsoft.signalr.HubConnectionState;
 
 public class MainActivity extends AppCompatActivity {
 //    LinearLayout linearLayout;
@@ -20,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        hubConnection = HubConnectionBuilder.create("http://192.168.1.253:54343/mainhub").build();
+//        hubConnection = HubConnectionBuilder.create("http://192.168.0.115:54343/mainhub").build();
 
         Button singlePlaying = (Button)findViewById(R.id.btnSinglePlayer);
         singlePlaying.setOnClickListener(new View.OnClickListener() {
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 final Bundle bundle = new Bundle();
                 bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
-                Intent i = new Intent(getApplicationContext(), LookingCompatitorActivity.class).putExtras(bundle);
+                Intent i = new Intent(getApplicationContext(), LookingCompetitorActivity.class).putExtras(bundle);
 
 //                if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
 //                    hubConnection.start();
@@ -50,13 +52,12 @@ public class MainActivity extends AppCompatActivity {
 //                }
 
                 startActivity(i);
+//                if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+//                    hubConnection.start().blockingAwait();
             }
         });
 
 
-
-
-//        hubConnection = HubConnectionBuilder.create("http://192.168.1.253:54343/mainhub").build();
 //        if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
 //            hubConnection.start();
 
