@@ -12,15 +12,19 @@ import com.microsoft.signalr.HubConnectionBuilder;
 
 public class MainActivity extends AppCompatActivity {
 //    LinearLayout linearLayout;
-
+    Helper helper;
     HubConnection hubConnection;
+
+    public HubConnection getHubConnection(){return hubConnection;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        hubConnection = HubConnectionBuilder.create("http://192.168.1.253:54343/mainhub").build();
+        helper = new Helper(this);
+
+        hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
 //        hubConnection = HubConnectionBuilder.create("http://192.168.0.115:54343/mainhub").build();
 
         Button singlePlaying = (Button)findViewById(R.id.btnSinglePlayer);
@@ -29,13 +33,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                Intent i = new Intent(getApplicationContext(), SinglePlayingActivity.class);
+                final Bundle bundle = new Bundle();
+                bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
+                Intent i = new Intent(getApplicationContext(), SinglePlayingActivity.class).putExtras(bundle);
                 startActivity(i);
             }
         });
 
-        Button onlinePlaying = (Button)findViewById(R.id.btnStartMultiPlayer);
-        onlinePlaying.setOnClickListener(new View.OnClickListener() {
+        Button multiPlaying = (Button)findViewById(R.id.btnStartMultiPlayer);
+        multiPlaying.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -57,6 +63,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button btnChargeAccount = (Button)findViewById(R.id.btnChargeAccount);
+        btnChargeAccount.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                final Bundle bundle = new Bundle();
+                bundle.putBinder("gameSessionViewId", new ObjectWrapperForBinder(-1));
+                bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
+                Intent i = new Intent(getApplicationContext(), ChargeActivity.class).putExtras(bundle);
+                startActivity(i);
+            }
+        });
+
 
 //        if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
 //            hubConnection.start();
@@ -67,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 //
 //        hubConnection.on("AckResponse", () -> {
-//            Button btn = (Button)findViewById(R.id.onlinePlaying);
+//            Button btn = (Button)findViewById(R.id.multiPlaying);
 //            btn.setText("Ok!");
 //        });
 //
@@ -88,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //
 //
-//        Button btn = (Button)findViewById(R.id.onlinePlaying);
+//        Button btn = (Button)findViewById(R.id.multiPlaying);
 //        btn.setOnClickListener(new View.OnClickListener(){
 //            @Override
 //            public void onClick(View view){

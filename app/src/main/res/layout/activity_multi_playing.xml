@@ -2,17 +2,210 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/primaryLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/multiplayingbackground"
     tools:context=".MultiPlayingActivity">
+
+    <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/infoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="12dp"
+        android:background="@color/colorPrimaryDark">
+
+        <LinearLayout
+            android:id="@+id/cainsLayout"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            percent:layout_widthPercent="60%">
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/rate"
+                android:layout_marginRight="7dp"/>
+            <TextView
+                android:id="@+id/rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="_"
+                android:textAlignment="textEnd"
+                android:textColor="#fff"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="امتیاز شما: "
+                android:textAlignment="textEnd"
+                android:textColor="#fff"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/cainsLayout"
+            android:gravity="right"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            percent:layout_widthPercent="40%">
+            <TextView
+                android:id="@+id/coins"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="_"
+                android:textAlignment="textStart"
+                android:textColor="#fff"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="تعداد سکه شما: "
+                android:textAlignment="textStart"
+                android:textColor="#fff"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/coins"
+                android:layout_marginLeft="7dp" />
+        </LinearLayout>
+    </androidx.percentlayout.widget.PercentRelativeLayout>
+    <LinearLayout
+        android:id="@+id/chargeAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/infoLayout"
+        android:background="@color/colorPrimaryDark"
+        android:layout_marginBottom="10dp"
+        android:padding="5dp"
+        android:visibility="gone">
+        <Button
+            android:id="@+id/btnChargeAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="افزایش سکه"/>
+    </LinearLayout>
+    <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/playersInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/infoLayout">
+
+        <LinearLayout
+            android:id="@+id/player1AvatarLayout"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            percent:layout_widthPercent="50%">
+
+<!--            <com.mikhaellopez.circularimageview.CircularImageView-->
+<!--                android:id="@+id/player1Avatar"-->
+<!--                android:layout_width="90dp"-->
+<!--                android:layout_height="90dp"-->
+<!--                android:src="@drawable/avatar1"-->
+<!--                app:civ_border_color="#C27DFF"-->
+<!--                app:civ_border_width="2dp"-->
+<!--                app:civ_shadow="true"-->
+<!--                app:civ_shadow_color="#dbb3ff"-->
+<!--                app:civ_shadow_radius="4" />-->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="چنگیز"
+                android:textAlignment="center"
+                android:textColor="#29004d"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/player2Line"
+                android:layout_width="match_parent"
+                android:layout_height="7dp"
+                android:background="@color/colorPrimaryDark"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/player1AvatarLayout"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            percent:layout_widthPercent="50%">
+
+<!--            <com.mikhaellopez.circularimageview.CircularImageView-->
+<!--                android:id="@+id/player2Avatar"-->
+<!--                android:layout_width="90dp"-->
+<!--                android:layout_height="90dp"-->
+<!--                android:src="@drawable/avatar2"-->
+<!--                app:civ_border_color="#C27DFF"-->
+<!--                app:civ_border_width="2dp"-->
+<!--                app:civ_shadow="true"-->
+<!--                app:civ_shadow_color="#dbb3ff"-->
+<!--                app:civ_shadow_radius="4" />-->
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="فرنگیز"
+                android:textAlignment="center"
+                android:textColor="#29004d"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/player1Line"
+                android:layout_width="match_parent"
+                android:layout_height="7dp"
+                android:background="@color/colorPrimaryDark"
+                android:visibility="visible" />
+        </LinearLayout>
+    </androidx.percentlayout.widget.PercentRelativeLayout>
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".MainActivity"/>
+        app:layout_constraintTop_toBottomOf="@+id/playersInfoLayout"
+        tools:context=".MainActivity"></LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

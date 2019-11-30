@@ -45,6 +45,7 @@ public class Boxes {
 
         Box temp = box;
         temp.setColor(color);
+        temp.getPaint().setAlpha(200);
         boxes.add(temp);
     }
 

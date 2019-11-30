@@ -1,7 +1,6 @@
 package com.iser.isdotgame;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ public class LookingCompetitorActivity extends AppCompatActivity {
     HubConnection hubConnection;
     Helper helper;
     boolean isConnected = false;
-    private int gameSessionId;
+    private String gameSessionViewId;
     DotBoxGame dotBoxGame;
 
     @Override
@@ -40,24 +39,25 @@ public class LookingCompetitorActivity extends AppCompatActivity {
             }
         });
 
-        helper = new Helper(getApplicationContext());
+        helper = new Helper(this);
 
 //        ConstraintLayout mainLayout = findViewById(R.id.mainLayout);
 //        linearLayout = findViewById(R.id.linearLayout);
 //        LinearLayout gif = findViewById(R.id.gif);
 
-        hubConnection = HubConnectionBuilder.create(helper.getHubUrl()).build();
+//        hubConnection = HubConnectionBuilder.create(helper.getHubUrl()).build();
+        hubConnection = (HubConnection)(((ObjectWrapperForBinder)getIntent().getExtras().getBinder("hubConnection")).getData());
 //        final HubConnection hubConnection = (HubConnection)(((ObjectWrapperForBinder)getIntent().getExtras().getBinder("hubConnection")).getData());
 
         hubConnection.on("StartTheGame", (gameSessionId) -> {
             try {
-                this.gameSessionId = Integer.parseInt(gameSessionId);
+                this.gameSessionViewId = gameSessionId.toString();
             }
             catch (Exception ex){
-                this.gameSessionId = -1;
+                this.gameSessionViewId = "";
             }
-//            dotBoxGame = new DotBoxGame(this, this.hubConnection, false, this.gameSessionId, this.helper);
-//            dotBoxGame.setGameSessionId(this.gameSessionId);
+//            dotBoxGame = new DotBoxGame(this, this.hubConnection, false, this.gameSessionViewId, this.helper);
+//            dotBoxGame.setGameSessionViewId(this.gameSessionViewId);
 //            dotBoxGame.GameIsStarted();
 //
 ////            mainLayout.removeView(gif);
@@ -71,19 +71,29 @@ public class LookingCompetitorActivity extends AppCompatActivity {
 //            linearLayout.invalidate();
             // Close current activity and open the relative activity
 
-            hubConnection.stop().blockingAwait();
+            //hubConnection.stop().blockingAwait();
             final Bundle bundle = new Bundle();
-            bundle.putBinder("gameSessionId", new ObjectWrapperForBinder(this.gameSessionId));
+            bundle.putBinder("gameSessionViewId", new ObjectWrapperForBinder(this.gameSessionViewId));
+            bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
             Intent i = new Intent(getApplicationContext(), MultiPlayingActivity.class).putExtras(bundle);
             startActivity(i);
         }, String.class);
 
-        if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
-            hubConnection.start().blockingAwait();
+        if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
+            try {
+                hubConnection.start().blockingAwait();
+            } catch (Exception ex){
+                helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+            }
+        }
 
         if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
             // Rise my hand!
-            hubConnection.send("RiseMyHand", helper.getUserUniqueId(), helper.getUsername());
+            try {
+                hubConnection.send("RiseMyHand", helper.getUserUniqueId(), helper.getUsername());
+            } catch (Exception ex){
+                helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+            }
         }
 
 //        if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {

@@ -1,19 +1,21 @@
 package com.iser.isdotgame;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.fragment.app.FragmentManager;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
@@ -31,7 +33,6 @@ public class DotBoxGame extends View {
     private float TOUCH_TOLERANCE_LARGE = 0;
     private Dot[][] dots;
     private Lines lines;
-    Line currentLine = null;
     boolean isInitialized = false;
     boolean isGameFinished = false;
     boolean isSinglePlayerMode = true;
@@ -45,7 +46,7 @@ public class DotBoxGame extends View {
     private Paint paint = new Paint();
     private Path path = new Path();
 
-    private int gameSessionId;
+    private String gameSessionViewId;
     private Helper helper;
     private boolean isItMyTurn = false;
 
@@ -53,22 +54,40 @@ public class DotBoxGame extends View {
 
     private Boxes boxes;
 
-    public void setGameSessionId(int gameSessionId){
-        this.gameSessionId = gameSessionId;
-    }
-//    public void setHubConnection(HubConnection hubConnection) { this.hubConnection = hubConnection; }
+    HubConnection hubConnection;
+
+    String userViewId;
+    Activity activity;
+    View player1Line;
+    View player2Line;
+    TextView rate;
+    TextView coins;
+
+    int shadowNormalRadius = 7;
+    int shadowDotRadius = 10;
+    int shadowDeepRadius = 20;
+    Line lastLineDrawn;
+
+
+
     public void setIsItMyTurn(boolean isItMyTurn) {
         this.isItMyTurn = isItMyTurn;
     }
 
-    public DotBoxGame(Context context, boolean isSinglePlayerMode, int gameSessionId, Helper helper) {
+    public DotBoxGame(Context context, boolean isSinglePlayerMode, String gameSessionId, Helper helper, HubConnection hubConnection) {
         super(context);
         this.context = context;
-
+        activity = (Activity) context;
+        player1Line = (View)activity.findViewById(R.id.player1Line);
+        player2Line = (View)activity.findViewById(R.id.player2Line);
+        rate = (TextView) activity.findViewById(R.id.rate);
+        coins = (TextView)activity.findViewById(R.id.coins);
         rows = 7;
         cols = 7;
 
         this.isSinglePlayerMode = isSinglePlayerMode;
+
+        setLayerType(LAYER_TYPE_SOFTWARE, paint);
 
         lines = new Lines();
         boxes = new Boxes(rows, cols);
@@ -81,29 +100,144 @@ public class DotBoxGame extends View {
                 .getDefaultDisplay()
                 .getMetrics(displayMetrics);
 
-//        this.hubConnection = hubConnection;
-        this.gameSessionId = gameSessionId;
-        this.helper = helper;
+        this.gameSessionViewId = gameSessionId;
+        this.helper = new Helper(context);
 
         if (!isSinglePlayerMode) {
-////            hubConnection.stop();
+//            this.hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
+            this.hubConnection = hubConnection;
+
+            this.hubConnection.on("ItsMyTurn", () -> {
+//                Line currentLine = null;
+//                for (Line line : lines.getList()) {
+//                    if (line.getIndex() == selectedLineByCompetitorIndex) {
+//                        currentLine = line;
+//                        break;
+//                    }
+//                }
 //
-//            this.priorAvtivityHubConnection = hubConnection;
-//            this.hubConnection = HubConnectionBuilder.create("http://192.168.1.253:54343/mainhub").build();
-//
-//            this.hubConnection.on("ItsMyTurn", () -> {
-//                isItMyTurn = true;
-//            });
+//                if (currentLine != null) {
+//                    if (!currentLine.getIsSelected()) {
+//                        currentLine.setIsSelected(true);
+//                        currentLine.getPaint().setColor(Color.parseColor(BLineColor));
+//                        for (Box box : boxes.getBoxes(currentLine)) {
+//                            box.updateLine(currentLine);
+//                            if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+////                                isItMyTurn = true;
+//                                box.getPaint().setColor(Color.parseColor(BBoxColor));
+//                                box.setOwner("2");
+//                            }
+//                        }
+//                    }
+//                }
+
+                isItMyTurn = true;
+//                ChangeTurn("A");
+
+//                invalidate();
+            });
+
+            this.hubConnection.on("SelectALine", (selectedLineByCompetitorIndex) -> {
+                Line currentLine = null;
+                for (Line line : lines.getList()) {
+                    if (line.getIndex() == selectedLineByCompetitorIndex) {
+                        currentLine = line;
+                        break;
+                    }
+                }
+
+                if (currentLine != null) {
+                    lastLineDrawn = currentLine;
+                    if (!currentLine.getIsSelected()) {
+                        currentLine.setOwner("2");
+                        currentLine.setIsSelected(true);
+                        currentLine.getPaint().setColor(Color.parseColor(BLineColor));
+                        for (Box box : boxes.getBoxes(currentLine)) {
+                            box.updateLine(currentLine);
+                            if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+//                                isItMyTurn = true;
+                                box.getPaint().setColor(Color.parseColor(BBoxColor));
+                                box.setOwner("2");
+                            }
+                        }
+
+                        this.postInvalidate();
+                    }
+                }
+//                this.invalidate();
+                //draw(canvas);
+            }, Integer.class);
+
+            this.hubConnection.on("WhoAmI", (userViewId) -> {
+                this.userViewId = userViewId;
+            }, String.class);
+
+            this.hubConnection.on("WhosTurn", (userViewId) -> {
+                if (this.userViewId.equals(userViewId)) {
+                    isItMyTurn = true;
+//                    ChangeTurn("A");
+                }
+                else {
+                    isItMyTurn = false;
+//                    ChangeTurn("B");
+                }
+            }, String.class);
+
+            this.hubConnection.on("Init", (userViewId, firstPlayerViewId, rate, coins) -> {
+                this.userViewId = userViewId;
+
+                if (this.userViewId.equals(firstPlayerViewId)) {
+                    isItMyTurn = true;
+                }
+                else {
+                    isItMyTurn = false;
+                }
+
+                this.rate.setText(rate);
+                this.coins.setText(coins);
+            }, String.class, String.class, String.class, String.class);
+        } else {
+            ChangeTurn("");
         }
 
-//        if (this.hubConnection != null) {
-//            if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
-//                this.hubConnection.start().blockingAwait();
+        if (!isSinglePlayerMode) {
+            if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
+                try {
+                    this.hubConnection.start().blockingAwait();
+                } catch (Exception ex) {
+                    helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                }
+            }
+            if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED){
+                try {
+//                    // Who Am I?
+//                    this.hubConnection.send("WhoAmI", helper.getUserUniqueId(), helper.getUsername());
 //
-////            hubConnection.on("ItsMyTurn", () -> {
-////                isItMyTurn = true;
-////            });
-//        }
+//                    // Who's Turn Is It?
+//                    this.hubConnection.send("WhosTurn", helper.getUserUniqueId(), helper.getUsername(), this.gameSessionViewId);
+                    this.hubConnection.send("Init", helper.getUserUniqueId(), helper.getUsername(), this.gameSessionViewId);
+                } catch (Exception ex){
+                    helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                }
+            }
+        }
+    }
+
+    private void ChangeTurn(String player){
+        if (!isSinglePlayerMode) {
+            if (player.toLowerCase().equals("a")) {
+                player1Line.setVisibility(VISIBLE);
+                player2Line.setVisibility(INVISIBLE);
+            } else if (player.toLowerCase().equals("b")) {
+                player1Line.setVisibility(INVISIBLE);
+                player2Line.setVisibility(VISIBLE);
+            }
+
+            ((MultiPlayingActivity)activity).findViewById(R.id.primaryLayout).invalidate();
+        } else {
+            player1Line.setVisibility(INVISIBLE);
+            player2Line.setVisibility(INVISIBLE);
+        }
     }
 
     public void GameIsStarted(){
@@ -126,9 +260,23 @@ public class DotBoxGame extends View {
             canvas.drawRect(box.getRect(), box.getPaint());
         }
 
+        // Reset line shadow colors
+        for (Line line : lines.getList()) {
+            if (line.getOwner() != null) {
+                if (line.getOwner().equals("1")) {
+                    line.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(ALineColor));
+                } else {
+                    line.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
+                }
+            }
+        }
+
         // Draw lines
         for (Line line : lines.getList()) {
-                canvas.drawPath(line.getPath(), line.getPaint());
+            if (lastLineDrawn != null && line.equals(lastLineDrawn)){
+                lastLineDrawn.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.RED);
+            }
+            canvas.drawPath(line.getPath(), line.getPaint());
         }
 
         // Draw dots
@@ -140,9 +288,10 @@ public class DotBoxGame extends View {
                 // PorterDuffXfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
                 paint.setStyle(Paint.Style.FILL);
                 paint.setColor(Color.parseColor(DotColor));
-                paint.setAlpha(255);
+//                aapaint.setAlpha(255);
                 // paint.setXfermode(xfermode);
                 paint.setAntiAlias(true);
+                paint.setShadowLayer(shadowDotRadius, 0, 0, Color.parseColor(DotColor));
                 // setBackgroundColor(Color.BLACK);
                 canvas.drawCircle(dot.getColCord(), dot.getRowCord(), r, paint);
             }
@@ -174,7 +323,7 @@ public class DotBoxGame extends View {
                 for (int col = 0; col < cols; col++) {
                     int rowCord, colCord;
                     colCord = space * col + space;
-                    rowCord = space * row + space;
+                    rowCord = space * row + (space / 7);
                     dots[row][col] = new Dot(rowCord, colCord, row, col);
                 }
             }
@@ -213,6 +362,13 @@ public class DotBoxGame extends View {
             // Re-draw
             drawLayout();
         }
+
+        if (isItMyTurn)
+            ChangeTurn("A");
+        else
+            ChangeTurn("B");
+
+        CheckIfGameIsFinished();
     }
 
     private void doNextStep(Line line){
@@ -243,6 +399,7 @@ public class DotBoxGame extends View {
                         case 1:
                             canISelectIt = false;
                             Line line1 = box.getLine1();
+                            lastLineDrawn = line1;
                             if (!line1.getIsSelected()) {
                                 Box topBox = boxes.getBox(row - 1, col);
                                 if (topBox != null) {
@@ -277,8 +434,10 @@ public class DotBoxGame extends View {
                                 }
                             }
                             if (canISelectIt) {
+                                line1.setOwner("2");
                                 line1.setIsSelected(true);
                                 line1.getPaint().setColor(Color.parseColor(BLineColor));
+                                line1.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
                                 for (Box box1 : boxes.getBoxes(line1)) {
                                     box1.updateLine(line1);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
@@ -291,6 +450,7 @@ public class DotBoxGame extends View {
                         case 2:
                             canISelectIt = false;
                             Line line2 = box.getLine2();
+                            lastLineDrawn = line2;
                             if (!line2.getIsSelected()) {
                                 Box leftBox = boxes.getBox(row, col - 1);
                                 if (leftBox != null) {
@@ -325,8 +485,10 @@ public class DotBoxGame extends View {
                                 }
                             }
                             if (canISelectIt) {
+                                line2.setOwner("2");
                                 line2.setIsSelected(true);
                                 line2.getPaint().setColor(Color.parseColor(BLineColor));
+                                line2.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
                                 for (Box box1 : boxes.getBoxes(line2)) {
                                     box1.updateLine(line2);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
@@ -339,6 +501,7 @@ public class DotBoxGame extends View {
                         case 3:
                             canISelectIt = false;
                             Line line3 = box.getLine3();
+                            lastLineDrawn = line3;
                             if (!line3.getIsSelected()) {
                                 Box topBox = boxes.getBox(row - 1, col);
                                 if (topBox != null) {
@@ -373,8 +536,10 @@ public class DotBoxGame extends View {
                                 }
                             }
                             if (canISelectIt) {
+                                line3.setOwner("2");
                                 line3.setIsSelected(true);
                                 line3.getPaint().setColor(Color.parseColor(BLineColor));
+                                line3.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
                                 for (Box box1 : boxes.getBoxes(line3)) {
                                     box1.updateLine(line3);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
@@ -387,6 +552,7 @@ public class DotBoxGame extends View {
                         case 4:
                             canISelectIt = false;
                             Line line4 = box.getLine4();
+                            lastLineDrawn = line4;
                             if (!line4.getIsSelected()) {
                                 Box leftBox = boxes.getBox(row, col - 1);
                                 if (leftBox != null) {
@@ -421,8 +587,10 @@ public class DotBoxGame extends View {
                                 }
                             }
                             if (canISelectIt) {
+                                line4.setOwner("2");
                                 line4.setIsSelected(true);
                                 line4.getPaint().setColor(Color.parseColor(BLineColor));
+                                line4.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
                                 for (Box box1 : boxes.getBoxes(line4)) {
                                     box1.updateLine(line4);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
@@ -454,13 +622,34 @@ public class DotBoxGame extends View {
             }
         }
 
-        if (isFinishedYet){
+        if (isFinishedYet && !isGameFinished){
+            isItMyTurn = false;
+            isGameFinished = true;
+
+            int aCount = 0;
+            int bCount = 0;
+            for(Box box : boxes.getList()){
+                if (box.getOwner().equals("1"))
+                    aCount++;
+                else
+                    bCount++;
+            }
+
+            String message = "";
+            if (aCount > bCount)
+                message = "تبریک! شما برنده شدید.";
+            else if (aCount < bCount)
+                message = "تبریک! بازی خوبی بود ولی حریفتان برنده بازی شده است.";
+            else if (aCount == bCount)
+                message = "تبریک! بازی خوبی بود و شما باهم مساوی شدید.";
+
 //            String message = "شما برنده بازی شدید!";
 //            MyDialog myDialog = new MyDialog(message);
 //            myDialog.show(fragmentManager, "example dialog");
-            Toast toast=Toast.makeText(this.context,"Hello Javatpoint",Toast.LENGTH_SHORT);
-            toast.setMargin(50,50);
-            toast.show();
+//            Toast toast=Toast.makeText(this.context,message,Toast.LENGTH_SHORT);
+//            toast.setMargin(50,50);
+//            toast.show();
+            helper.showMessage(message);
         }
     }
 
@@ -487,8 +676,10 @@ public class DotBoxGame extends View {
                 else if (!box.getLine4IsSelected())
                     currentLine = box.getLine4();
 
+                currentLine.setOwner("2");
                 currentLine.setIsSelected(true);
                 currentLine.getPaint().setColor(Color.parseColor(BLineColor));
+                currentLine.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
                 for (Box box1 : boxes.getBoxes(currentLine)) {
                     box1.updateLine(currentLine);
                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
@@ -525,8 +716,11 @@ public class DotBoxGame extends View {
                 else if (!box.getLine4IsSelected())
                     currentLine = box.getLine4();
 
+                currentLine.setOwner("2");
                 currentLine.setIsSelected(true);
+                currentLine.setOwner("2");
                 currentLine.getPaint().setColor(Color.parseColor(BLineColor));
+                currentLine.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(BLineColor));
                 for (Box box1 : boxes.getBoxes(currentLine)) {
                     box1.updateLine(currentLine);
                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
@@ -546,6 +740,7 @@ public class DotBoxGame extends View {
     }
 
     private void touch_start(float x, float y) {
+        Line currentLine = null;
         if (!isGameFinished) {
             boolean isItMyTurn = false;
             for (Line line : lines.getList()) {
@@ -567,32 +762,67 @@ public class DotBoxGame extends View {
                         currentLine = line;
                 }
 
-                if (currentLine != null) {
-                    if (!currentLine.getIsSelected()) {
-                        currentLine.setIsSelected(true);
-                        currentLine.getPaint().setColor(Color.parseColor(ALineColor));
-                        for (Box box : boxes.getBoxes(currentLine)) {
-                            box.updateLine(currentLine);
-                            if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
-                                isItMyTurn = true;
-                                box.getPaint().setColor(Color.parseColor(ABoxColor));
-                                box.setOwner("1");
-                            }
-                        }
+                if (currentLine != null)
+                    break;
+            }
 
-                        if (!isItMyTurn) {
-                            if (isSinglePlayerMode) {
-                                CheckIfGameIsFinished();
-                                doNextStep(currentLine);
-                                CheckIfGameIsFinished();
-                            } else if (!isSinglePlayerMode) {
-                                // Send the selected lines infor to the competitor
-//                                hubConnection.send("IPlayedMyTurn", gameSessionId, helper.getUserUniqueId(), helper.getUsername(), currentLine.getIndex());
+            if (currentLine != null) {
+                if (!isSinglePlayerMode) {
+                    if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+                        this.hubConnection.start().blockingAwait();
+                    if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+                        try {
+                            this.hubConnection.send("SelectALine", helper.getUserUniqueId(), helper.getUsername(), gameSessionViewId, currentLine.getIndex());
+                        } catch (Exception ex) {
+                            helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                        }
+                    }
+                }
+
+                if (!currentLine.getIsSelected()) {
+                    currentLine.setOwner("1");
+                    currentLine.setIsSelected(true);
+                    currentLine.getPaint().setColor(Color.parseColor(ALineColor));
+                    currentLine.getPaint().setShadowLayer(shadowNormalRadius, 0, 0, Color.parseColor(ALineColor));
+                    for (Box box : boxes.getBoxes(currentLine)) {
+                        box.updateLine(currentLine);
+                        if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+                            isItMyTurn = true;
+                            box.getPaint().setColor(Color.parseColor(ABoxColor));
+                            box.setOwner("1");
+                        }
+                    }
+
+//                        CheckIfGameIsFinished();
+
+                    if (!isItMyTurn) {
+                        if (isSinglePlayerMode) {
+//                                CheckIfGameIsFinished();
+                            doNextStep(currentLine);
+//                                CheckIfGameIsFinished();
+                        } else if (!isSinglePlayerMode) {
+//                                CheckIfGameIsFinished();
+                            lastLineDrawn = null;
+
+                            // Send the selected lines infor to the competitor
+                            if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
+                                try {
+                                    this.hubConnection.start().blockingAwait();
+                                } catch (Exception ex) {
+                                    helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                                }
+                            }
+                            if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+                                try {
+                                    this.hubConnection.send("IPlayedMyTurn", helper.getUserUniqueId(), helper.getUsername(), gameSessionViewId, currentLine.getIndex());
+                                } catch (Exception ex) {
+                                    helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                                }
                                 this.isItMyTurn = false;
+//                                    ChangeTurn("B");
                             }
                         }
                     }
-                    break;
                 }
             }
         }
@@ -603,7 +833,7 @@ public class DotBoxGame extends View {
     }
 
     private void touch_up(float x, float y) {
-        currentLine = null;
+        //currentLine = null;
     }
 
     @Override
@@ -615,16 +845,17 @@ public class DotBoxGame extends View {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     touch_start(x, y);
+//                    this.postInvalidate();
                     invalidate();
                     break;
                 case MotionEvent.ACTION_MOVE:
 //                touch_move(x, y);
 //                invalidate();
-
                     break;
                 case MotionEvent.ACTION_UP:
-                    touch_up(x, y);
-                    invalidate();
+//                    touch_up(x, y);
+//                    invalidate();
+
                     break;
                 case MotionEvent.ACTION_CANCEL:
                     break;

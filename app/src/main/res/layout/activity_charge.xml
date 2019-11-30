@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/chargebackground"
+    tools:context=".ChargeActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="خرید آنلاین سکه از فروشگاه"
+            android:padding="12dp"
+            android:textAlignment="center"
+            android:textStyle="bold"/>
+        <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <Button
+                android:id="@+id/ol2000"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="100 سکه 2000 تومان"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="50%"/>
+            <Button
+                android:id="@+id/ol3000"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="210 سکه 3000 تومان"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="50%"
+                android:layout_toRightOf="@id/ol2000"/>
+<!--            <Button-->
+<!--                android:id="@+id/ol2000"-->
+<!--                android:layout_width="0dip"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="100 سکه 2000 تومان"-->
+<!--                percent:layout_widthPercent="50%"/>-->
+<!--            <Button-->
+<!--                android:id="@+id/ol3000"-->
+<!--                android:layout_width="0dip"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="210 سکه 3000 تومان"-->
+<!--                percent:layout_widthPercent="50%"-->
+<!--                android:layout_toRightOf="@id/ol2000"/>-->
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+        <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+            <Button
+                android:id="@+id/ol4000"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="320 سکه 3000 تومان"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="50%"/>
+            <Button
+                android:id="@+id/ol5000"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="6dp"
+                android:text="430 سکه 5000 تومان"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="50%"
+                android:layout_toRightOf="@id/ol4000"/>
+<!--            <Button-->
+<!--                android:id="@+id/ol4000"-->
+<!--                android:layout_width="0dip"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="320 سکه 4000 تومان"-->
+<!--                percent:layout_widthPercent="50%"/>-->
+<!--            <Button-->
+<!--                android:id="@+id/ol5000"-->
+<!--                android:layout_width="0dip"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="430 سکه 5000 تومان"-->
+<!--                percent:layout_widthPercent="50%"-->
+<!--                android:layout_toRightOf="@id/ol4000"/>-->
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="افزایش رایگان سکه!"
+            android:padding="12dp"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"/>
+        <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp">
+            <EditText
+                android:id="@+id/txtName"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:hint="اسمتون چیه؟"
+                percent:layout_widthPercent="70%"
+                android:layout_toRightOf="@+id/btnSetName"/>
+            <Button
+                android:id="@+id/btnSetName"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="10 سکه"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="30%"/>
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+        <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp">
+            <EditText
+                android:id="@+id/txtMobile"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:hint="شماره موبایلتون چنده؟"
+                percent:layout_widthPercent="70%"
+                android:layout_toRightOf="@+id/btnSetMobile"/>
+            <Button
+                android:id="@+id/btnSetMobile"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="10 سکه"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="30%"/>
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+        <androidx.percentlayout.widget.PercentRelativeLayout xmlns:percent="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp">
+            <Button
+                android:id="@+id/btnSetImage"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="عکسشو ثبت کن 20 امتیاز بگیر"
+                android:background="@drawable/btn_rounded_1"
+                android:padding="8dp"
+                percent:layout_widthPercent="100%"/>
+        </androidx.percentlayout.widget.PercentRelativeLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

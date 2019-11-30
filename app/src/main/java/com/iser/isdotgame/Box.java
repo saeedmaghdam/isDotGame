@@ -2,6 +2,8 @@ package com.iser.isdotgame;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
@@ -76,7 +78,13 @@ public class Box {
         paint = new Paint();
         color = "#F7F7F7";
         paint.setColor(Color.parseColor(color));
+//        paint.setAlpha(100);
+//        paint.setStyle(Paint.Style.FILL);
         rect = new Rect(Math.round(dot00.getColCord()), Math.round(dot00.getRowCord()), Math.round(dot01.getColCord()), Math.round(dot10.getRowCord())  );
+
+        //Draw transparent shape
+//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.LIGHTEN));
+//        canvas.drawRoundRect(circleRect, radius, radius, paint);
     }
 
     public void updateLine(Line line){

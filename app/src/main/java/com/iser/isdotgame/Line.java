@@ -12,10 +12,14 @@ public class Line {
     private boolean isSelected = false;
     private String orientation;
     private int index;
+    private String owner;
 
     public boolean getIsSelected(){return isSelected;}
     public void setIsSelected(boolean val){isSelected = val;}
     public String getOrientation(){return orientation;}
+    public String getOwner(){return owner;}
+
+    public void setOwner(String owner){this.owner = owner;}
 //    public void setOrientation(String val){orientation = val;}
 
     public Line(int index, Dot startDot, Dot endDot) {
