@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -12,13 +13,17 @@ import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 
-public class LookingCompetitorActivity extends AppCompatActivity {
+import java.util.concurrent.Callable;
+
+public class LookingCompetitorActivity extends BaseActivity {
     LinearLayout linearLayout;
     HubConnection hubConnection;
     Helper helper;
     boolean isConnected = false;
     private String gameSessionViewId;
     DotBoxGame dotBoxGame;
+    SignalRService service;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +51,21 @@ public class LookingCompetitorActivity extends AppCompatActivity {
 //        LinearLayout gif = findViewById(R.id.gif);
 
 //        hubConnection = HubConnectionBuilder.create(helper.getHubUrl()).build();
-        hubConnection = (HubConnection)(((ObjectWrapperForBinder)getIntent().getExtras().getBinder("hubConnection")).getData());
+//        hubConnection = (HubConnection)(((ObjectWrapperForBinder)getIntent().getExtras().getBinder("hubConnection")).getData());
+        service = new SignalRService(this, handler);
+        super.setUpdateMethod(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                CheckFields();
+                return null;
+            }
+        });
+
+//        hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
+        hubConnection = service.getHubConnection();
 //        final HubConnection hubConnection = (HubConnection)(((ObjectWrapperForBinder)getIntent().getExtras().getBinder("hubConnection")).getData());
 
-        hubConnection.on("StartTheGame", (gameSessionId) -> {
+        hubConnection.on("StartTheGame", (gameSessionId, compatitorName) -> {
             try {
                 this.gameSessionViewId = gameSessionId.toString();
             }
@@ -74,10 +90,11 @@ public class LookingCompetitorActivity extends AppCompatActivity {
             //hubConnection.stop().blockingAwait();
             final Bundle bundle = new Bundle();
             bundle.putBinder("gameSessionViewId", new ObjectWrapperForBinder(this.gameSessionViewId));
-            bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
+            bundle.putBinder("compatitorName", new ObjectWrapperForBinder(compatitorName));
+//            bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
             Intent i = new Intent(getApplicationContext(), MultiPlayingActivity.class).putExtras(bundle);
             startActivity(i);
-        }, String.class);
+        }, String.class, String.class);
 
         if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
             try {
@@ -140,5 +157,9 @@ public class LookingCompetitorActivity extends AppCompatActivity {
 //        linearLayout = findViewById(R.id.linearLayout);
 //        MyBoard myBoard = new MyBoard(this);
 //        linearLayout.addView(myBoard);
+    }
+
+    private void CheckFields(){
+
     }
 }

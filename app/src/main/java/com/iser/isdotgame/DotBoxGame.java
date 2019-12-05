@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.microsoft.signalr.HubConnectionState;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class DotBoxGame extends View {
     Context context;
@@ -57,7 +59,7 @@ public class DotBoxGame extends View {
     HubConnection hubConnection;
 
     String userViewId;
-    Activity activity;
+    BaseActivity activity;
     View player1Line;
     View player2Line;
     TextView rate;
@@ -68,16 +70,20 @@ public class DotBoxGame extends View {
     int shadowDeepRadius = 20;
     Line lastLineDrawn;
 
+    SignalRService service;
+    Handler handler;
+
 
 
     public void setIsItMyTurn(boolean isItMyTurn) {
         this.isItMyTurn = isItMyTurn;
     }
 
-    public DotBoxGame(Context context, boolean isSinglePlayerMode, String gameSessionId, Helper helper, HubConnection hubConnection) {
+    public DotBoxGame(Context context, boolean isSinglePlayerMode, String gameSessionId, Helper helper, HubConnection hubConnection, Handler handler) {
         super(context);
         this.context = context;
-        activity = (Activity) context;
+        this.handler = handler;
+        activity = (BaseActivity) context;
         player1Line = (View)activity.findViewById(R.id.player1Line);
         player2Line = (View)activity.findViewById(R.id.player2Line);
         rate = (TextView) activity.findViewById(R.id.rate);
@@ -105,7 +111,18 @@ public class DotBoxGame extends View {
 
         if (!isSinglePlayerMode) {
 //            this.hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
-            this.hubConnection = hubConnection;
+//            this.hubConnection = hubConnection;
+            service = new SignalRService(context, handler);
+            activity.setUpdateMethod(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    CheckFields();
+                    return null;
+                }
+            });
+
+//        hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
+            this.hubConnection = service.getHubConnection();
 
             this.hubConnection.on("ItsMyTurn", () -> {
 //                Line currentLine = null;
@@ -221,6 +238,10 @@ public class DotBoxGame extends View {
                 }
             }
         }
+    }
+
+    private void CheckFields(){
+
     }
 
     private void ChangeTurn(String player){

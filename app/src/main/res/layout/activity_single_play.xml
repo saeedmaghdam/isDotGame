@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="12dp">
+        android:visibility="gone">
 
         <LinearLayout
             android:id="@+id/cainsLayout"
@@ -28,17 +28,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            percent:layout_widthPercent="60%">
+            percent:layout_widthPercent="50%"
+            android:padding="12dp">
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/rate"
-                android:layout_marginRight="7dp"/>
+                android:src="@drawable/rate"/>
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/rate"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="امتیاز شما: 118"
-                android:textAlignment="textEnd"
+                android:text="-"
+                android:textAlignment="center"
                 android:textColor="#fff"
                 android:textSize="@dimen/text_size"
                 android:textStyle="bold" />
@@ -48,26 +49,27 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/cainsLayout"
-            android:gravity="right"
+            android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            percent:layout_widthPercent="40%">
+            percent:layout_widthPercent="50%"
+            android:padding="12dp">
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/coins"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="تعداد سکه شما: 53"
-                android:textAlignment="textStart"
+                android:text="-"
+                android:textAlignment="center"
                 android:textColor="#fff"
                 android:textSize="@dimen/text_size"
                 android:textStyle="bold" />
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/coins"
-                android:layout_marginLeft="7dp" />
+                android:src="@drawable/coins" />
         </LinearLayout>
     </androidx.percentlayout.widget.PercentRelativeLayout>
     <LinearLayout
@@ -130,9 +132,10 @@
 <!--                app:civ_border_color="#FF000000"/>-->
 
             <TextView
+                android:id="@+id/compatitorName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="چنگیز"
+                android:text="اندروید"
                 android:textAlignment="center"
                 android:textColor="#29004d"
                 android:textSize="20dp"
@@ -178,9 +181,10 @@
 <!--                app:civ_border_color="#FF000000"/>-->
 
             <TextView
+                android:id="@+id/myName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="فرنگیز"
+                android:text="شما"
                 android:textAlignment="center"
                 android:textColor="#29004d"
                 android:textSize="20dp"

@@ -16,9 +16,7 @@
         android:weightSum="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:padding="12dp"
-        android:background="@color/colorPrimaryDark">
+        app:layout_constraintBottom_toBottomOf="parent"   >
 
         <LinearLayout
             android:id="@+id/cainsLayout"
@@ -30,28 +28,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            percent:layout_widthPercent="60%">
+            percent:layout_widthPercent="50%"
+            android:padding="12dp">
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/rate"
-                android:layout_marginRight="7dp"/>
+                android:src="@drawable/rate"/>
             <TextView
                 android:id="@+id/rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="_"
-                android:textAlignment="textEnd"
+                android:text="-"
+                android:textAlignment="center"
                 android:textColor="#fff"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="امتیاز شما: "
-                android:textAlignment="textEnd"
-                android:textColor="#fff"
-                android:textSize="20dp"
+                android:textSize="@dimen/text_size"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -59,35 +49,27 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/cainsLayout"
-            android:gravity="right"
+            android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            percent:layout_widthPercent="40%">
+            percent:layout_widthPercent="50%"
+            android:padding="12dp">
             <TextView
                 android:id="@+id/coins"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="_"
-                android:textAlignment="textStart"
+                android:text="-"
+                android:textAlignment="center"
                 android:textColor="#fff"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="تعداد سکه شما: "
-                android:textAlignment="textStart"
-                android:textColor="#fff"
-                android:textSize="20dp"
+                android:textSize="@dimen/text_size"
                 android:textStyle="bold" />
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/coins"
-                android:layout_marginLeft="7dp" />
+                android:src="@drawable/coins" />
         </LinearLayout>
     </androidx.percentlayout.widget.PercentRelativeLayout>
     <LinearLayout
@@ -115,7 +97,8 @@
         android:weightSum="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/infoLayout">
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingTop="5dp">
 
         <LinearLayout
             android:id="@+id/player1AvatarLayout"
@@ -129,21 +112,30 @@
             app:layout_constraintTop_toTopOf="parent"
             percent:layout_widthPercent="50%">
 
-<!--            <com.mikhaellopez.circularimageview.CircularImageView-->
-<!--                android:id="@+id/player1Avatar"-->
-<!--                android:layout_width="90dp"-->
-<!--                android:layout_height="90dp"-->
-<!--                android:src="@drawable/avatar1"-->
-<!--                app:civ_border_color="#C27DFF"-->
-<!--                app:civ_border_width="2dp"-->
-<!--                app:civ_shadow="true"-->
-<!--                app:civ_shadow_color="#dbb3ff"-->
-<!--                app:civ_shadow_radius="4" />-->
+            <!--            <com.mikhaellopez.circularimageview.CircularImageView-->
+            <!--                android:id="@+id/player1Avatar"-->
+            <!--                android:layout_width="90dp"-->
+            <!--                android:layout_height="90dp"-->
+            <!--                android:src="@drawable/avatar1"-->
+            <!--                app:civ_border_color="#C27DFF"-->
+            <!--                app:civ_border_width="2dp"-->
+            <!--                app:civ_shadow="true"-->
+            <!--                app:civ_shadow_color="#dbb3ff"-->
+            <!--                app:civ_shadow_radius="4" />-->
+            <!--            <de.hdodenhof.circleimageview.CircleImageView-->
+            <!--                xmlns:app="http://schemas.android.com/apk/res-auto"-->
+            <!--                android:id="@+id/player1Avatar"-->
+            <!--                android:layout_width="96dp"-->
+            <!--                android:layout_height="96dp"-->
+            <!--                android:src="@drawable/avatar1"-->
+            <!--                app:civ_border_width="2dp"-->
+            <!--                app:civ_border_color="#FF000000"/>-->
 
             <TextView
+                android:id="@+id/compatitorName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="چنگیز"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="#29004d"
                 android:textSize="20dp"
@@ -181,9 +173,10 @@
 <!--                app:civ_shadow_radius="4" />-->
 
             <TextView
+                android:id="@+id/myName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="فرنگیز"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="#29004d"
                 android:textSize="20dp"
