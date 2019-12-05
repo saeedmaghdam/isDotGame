@@ -48,8 +48,8 @@ public class Helper {
         return "";
     }
 
-    private static String baseUrl = "http://192.168.1.253:54343/";
-//    private static String baseUrl = "http://192.168.0.115:54343/";
+//    private static String baseUrl = "http://192.168.1.253:54343/";
+    private static String baseUrl = "http://192.168.0.115:54343/";
 
     public String getHubUrl(){
 //        return "http://poldash.ir/mainhub";

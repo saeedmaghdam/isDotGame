@@ -95,6 +95,8 @@ public class ChargeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charge);
 
+        startService(new Intent(this, SoundService.class));
+
         helper = new Helper(this);
         fileService = APIUtils.getFileService();
         super.setUpdateMethod(new Callable<Void>() {
@@ -893,6 +895,13 @@ public class ChargeActivity extends BaseActivity {
 ////        if (CancelableCallback.runningProcess()==false) finish();
 //    }
 
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
     //Remove this section if you don't want camera code (Start)
     //Got new image taken from camera intent
 //    @Override
@@ -951,6 +960,7 @@ public class ChargeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        startService(new Intent(this, SoundService.class));
         this.handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -1045,5 +1055,18 @@ public class ChargeActivity extends BaseActivity {
                     helper.showMessage("خطا در ایجاد درخواست پرداخت");
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        //stop service and stop music
+        stopService(new Intent(this, SoundService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        stopService(new Intent(this, SoundService.class));
+        super.onPause();
     }
 }

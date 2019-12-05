@@ -33,6 +33,8 @@ public class SinglePlayingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_play);
 
+        startService(new Intent(this, SoundService.class));
+
         helper = new Helper(getApplicationContext());
 //        hubConnection = (HubConnection)(((ObjectWrapperForBinder)getIntent().getExtras().getBinder("hubConnection")).getData());
 //        service = new SignalRService(this, handler);
@@ -62,6 +64,11 @@ public class SinglePlayingActivity extends BaseActivity {
                 startActivity(i);
             }
         });
+
+        TextView player1 = findViewById(R.id.myName);
+        TextView player2 = findViewById(R.id.compatitorName);
+        player1.setText("شما");
+        player2.setText("اندروید");
     }
 
 //    private void CheckFields(){
@@ -85,6 +92,7 @@ public class SinglePlayingActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        startService(new Intent(this, SoundService.class));
         this.handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -92,5 +100,25 @@ public class SinglePlayingActivity extends BaseActivity {
 
             }
         };
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //stop service and stop music
+        stopService(new Intent(this, SoundService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        stopService(new Intent(this, SoundService.class));
+        super.onPause();
     }
 }

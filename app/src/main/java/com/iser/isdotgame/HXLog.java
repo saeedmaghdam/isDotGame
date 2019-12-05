@@ -1,7 +1,7 @@
 package com.iser.isdotgame;
 
 import android.util.Log;
-import com.huhx0015.hxaudio.BuildConfig;
+import com.iser.isdotgame.BuildConfig;
 
 /** -----------------------------------------------------------------------------------------------
  *  [HXLog] CLASS

@@ -1,11 +1,11 @@
 package com.iser.isdotgame;
 
 import android.content.Context;
-import com.huhx0015.hxaudio.builder.HXMusicBuilder;
-import com.huhx0015.hxaudio.interfaces.HXMusicEngineListener;
-import com.huhx0015.hxaudio.interfaces.HXMusicListener;
-import com.huhx0015.hxaudio.model.HXMusicItem;
-import com.huhx0015.hxaudio.utils.HXLog;
+import com.iser.isdotgame.HXMusicBuilder;
+import com.iser.isdotgame.HXMusicEngineListener;
+import com.iser.isdotgame.HXMusicListener;
+import com.iser.isdotgame.HXMusicItem;
+import com.iser.isdotgame.HXLog;
 
 /** -----------------------------------------------------------------------------------------------
  *  [HXMusic] CLASS

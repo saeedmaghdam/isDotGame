@@ -1,8 +1,8 @@
 package com.iser.isdotgame;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,12 +14,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.microsoft.signalr.HubConnection;
-import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 
 import java.util.ArrayList;
@@ -73,7 +69,11 @@ public class DotBoxGame extends View {
     SignalRService service;
     Handler handler;
 
+    private SoundPlayer soundPlayer;
 
+    private Line currentLine;
+    private int lineIndexInDoNextStep;
+    private boolean canISelectItInDoNextStep;
 
     public void setIsItMyTurn(boolean isItMyTurn) {
         this.isItMyTurn = isItMyTurn;
@@ -88,8 +88,8 @@ public class DotBoxGame extends View {
         player2Line = (View)activity.findViewById(R.id.player2Line);
         rate = (TextView) activity.findViewById(R.id.rate);
         coins = (TextView)activity.findViewById(R.id.coins);
-        rows = 7;
-        cols = 7;
+        rows = 6;
+        cols = 6;
 
         this.isSinglePlayerMode = isSinglePlayerMode;
 
@@ -99,6 +99,9 @@ public class DotBoxGame extends View {
         boxes = new Boxes(rows, cols);
 
         dots = new Dot[rows][cols];
+
+        soundPlayer = new SoundPlayer(context);
+//        soundPlayer.playBackgroundSound();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
 
@@ -155,6 +158,8 @@ public class DotBoxGame extends View {
             });
 
             this.hubConnection.on("SelectALine", (selectedLineByCompetitorIndex) -> {
+                soundPlayer.playHit2Sound();
+
                 Line currentLine = null;
                 for (Line line : lines.getList()) {
                     if (line.getIndex() == selectedLineByCompetitorIndex) {
@@ -214,7 +219,8 @@ public class DotBoxGame extends View {
                 this.coins.setText(coins);
             }, String.class, String.class, String.class, String.class);
         } else {
-            ChangeTurn("");
+            isItMyTurn = true;
+            ChangeTurn("A");
         }
 
         if (!isSinglePlayerMode) {
@@ -245,7 +251,13 @@ public class DotBoxGame extends View {
     }
 
     private void ChangeTurn(String player){
-        if (!isSinglePlayerMode) {
+//        ((Activity)context).runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        });
+        if (!isSinglePlayerMode || 1==1) {
             if (player.toLowerCase().equals("a")) {
                 player1Line.setVisibility(VISIBLE);
                 player2Line.setVisibility(INVISIBLE);
@@ -253,12 +265,16 @@ public class DotBoxGame extends View {
                 player1Line.setVisibility(INVISIBLE);
                 player2Line.setVisibility(VISIBLE);
             }
-
-            ((MultiPlayingActivity)activity).findViewById(R.id.primaryLayout).invalidate();
+//            ((MultiPlayingActivity)activity).findViewById(R.id.primaryLayout).invalidate();
+//            ((MultiPlayingActivity)activity).findViewById(R.id.primaryLayout).invalidate();
+//            player1Line.invalidate();
+//            player2Line.invalidate();
         } else {
             player1Line.setVisibility(INVISIBLE);
             player2Line.setVisibility(INVISIBLE);
         }
+
+        this.invalidate();
     }
 
     public void GameIsStarted(){
@@ -384,15 +400,23 @@ public class DotBoxGame extends View {
             drawLayout();
         }
 
-        if (isItMyTurn)
-            ChangeTurn("A");
-        else
-            ChangeTurn("B");
+        if (!isSinglePlayerMode) {
+            if (isItMyTurn)
+                ChangeTurn("A");
+            else
+                ChangeTurn("B");
+        }
 
         CheckIfGameIsFinished();
+
+//        PercentRelativeLayout playersInfoLayout = ((Activity)context).findViewById(R.id.playersInfoLayout);
+//        playersInfoLayout.invalidate();
+
     }
 
     private void doNextStep(Line line){
+        Handler handler1 = new Handler();
+
         if (!isGameFinished) {
             checkIfPcCanFillAnyEmptyBox(line);
             checkAllBoxesIfPcCanFillAnyEmptyBox();
@@ -413,12 +437,29 @@ public class DotBoxGame extends View {
                 Box box = boxes.getBox(indexes.indexOf(i));
                 int row = box.getRow();
                 int col = box.getCol();
-                boolean canISelectIt = false;
+                canISelectItInDoNextStep = false;
 
-                for (int j = 0; j < lineIndexes.size(); j++) {
-                    switch (j) {
+                for (lineIndexInDoNextStep = 0; lineIndexInDoNextStep < lineIndexes.size(); lineIndexInDoNextStep++) {
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        public void run() {
+//                            // Actions to do after 1 seconds
+//
+//
+//                        }
+//                    }, 1000);
+//                    invalidate();
+//                    try {
+//                        Thread.sleep(500);
+//                    }
+//                    catch (InterruptedException e){
+//                        Log.d("ooooooooooooooooooo", e.getStackTrace().toString());
+//                    }
+
+                    boolean isItAndroidsTurn = false;
+                    switch (lineIndexInDoNextStep) {
                         case 1:
-                            canISelectIt = false;
+                            canISelectItInDoNextStep = false;
                             Line line1 = box.getLine1();
                             lastLineDrawn = line1;
                             if (!line1.getIsSelected()) {
@@ -433,9 +474,9 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
 
                                 Box bottomBox = boxes.getBox(row + 1, col);
@@ -449,12 +490,12 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
                             }
-                            if (canISelectIt) {
+                            if (canISelectItInDoNextStep) {
                                 line1.setOwner("2");
                                 line1.setIsSelected(true);
                                 line1.getPaint().setColor(Color.parseColor(BLineColor));
@@ -462,14 +503,22 @@ public class DotBoxGame extends View {
                                 for (Box box1 : boxes.getBoxes(line1)) {
                                     box1.updateLine(line1);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+                                        isItAndroidsTurn = true;
                                         box.getPaint().setColor(Color.parseColor(BBoxColor));
                                         box.setOwner("2");
                                     }
                                 }
                             }
+
+//                            if (isItAndroidsTurn){
+//                                soundPlayer.playBoxSelectionSound();
+//                            } else {
+//                                soundPlayer.playHit2Sound();
+//                            }
+
                             break;
                         case 2:
-                            canISelectIt = false;
+                            canISelectItInDoNextStep = false;
                             Line line2 = box.getLine2();
                             lastLineDrawn = line2;
                             if (!line2.getIsSelected()) {
@@ -484,9 +533,9 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
 
                                 Box rightBox = boxes.getBox(row, col + 1);
@@ -500,12 +549,12 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
                             }
-                            if (canISelectIt) {
+                            if (canISelectItInDoNextStep) {
                                 line2.setOwner("2");
                                 line2.setIsSelected(true);
                                 line2.getPaint().setColor(Color.parseColor(BLineColor));
@@ -513,14 +562,22 @@ public class DotBoxGame extends View {
                                 for (Box box1 : boxes.getBoxes(line2)) {
                                     box1.updateLine(line2);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+                                        isItAndroidsTurn = true;
                                         box.getPaint().setColor(Color.parseColor(BBoxColor));
                                         box.setOwner("2");
                                     }
                                 }
                             }
+
+//                            if (isItAndroidsTurn){
+//                                soundPlayer.playBoxSelectionSound();
+//                            } else {
+//                                soundPlayer.playHit2Sound();
+//                            }
+
                             break;
                         case 3:
-                            canISelectIt = false;
+                            canISelectItInDoNextStep = false;
                             Line line3 = box.getLine3();
                             lastLineDrawn = line3;
                             if (!line3.getIsSelected()) {
@@ -535,9 +592,9 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
 
                                 Box bottomBox = boxes.getBox(row + 1, col);
@@ -551,12 +608,12 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
                             }
-                            if (canISelectIt) {
+                            if (canISelectItInDoNextStep) {
                                 line3.setOwner("2");
                                 line3.setIsSelected(true);
                                 line3.getPaint().setColor(Color.parseColor(BLineColor));
@@ -564,14 +621,22 @@ public class DotBoxGame extends View {
                                 for (Box box1 : boxes.getBoxes(line3)) {
                                     box1.updateLine(line3);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+                                        isItAndroidsTurn = true;
                                         box.getPaint().setColor(Color.parseColor(BBoxColor));
                                         box.setOwner("2");
                                     }
                                 }
                             }
+
+//                            if (isItAndroidsTurn){
+//                                soundPlayer.playBoxSelectionSound();
+//                            } else {
+//                                soundPlayer.playHit2Sound();
+//                            }
+
                             break;
                         case 4:
-                            canISelectIt = false;
+                            canISelectItInDoNextStep = false;
                             Line line4 = box.getLine4();
                             lastLineDrawn = line4;
                             if (!line4.getIsSelected()) {
@@ -586,9 +651,9 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
 
                                 Box rightBox = boxes.getBox(row, col + 1);
@@ -602,12 +667,12 @@ public class DotBoxGame extends View {
                                         selectedCount++;
 
                                     if (selectedCount <= 1)
-                                        canISelectIt = true;
+                                        canISelectItInDoNextStep = true;
                                 } else {
-                                    canISelectIt = true;
+                                    canISelectItInDoNextStep = true;
                                 }
                             }
-                            if (canISelectIt) {
+                            if (canISelectItInDoNextStep) {
                                 line4.setOwner("2");
                                 line4.setIsSelected(true);
                                 line4.getPaint().setColor(Color.parseColor(BLineColor));
@@ -615,19 +680,29 @@ public class DotBoxGame extends View {
                                 for (Box box1 : boxes.getBoxes(line4)) {
                                     box1.updateLine(line4);
                                     if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+                                        isItAndroidsTurn = true;
                                         box.getPaint().setColor(Color.parseColor(BBoxColor));
                                         box.setOwner("2");
                                     }
                                 }
                             }
+
+//                            if (isItAndroidsTurn){
+//                                soundPlayer.playBoxSelectionSound();
+//                            } else {
+//                                soundPlayer.playHit2Sound();
+//                            }
+
                             break;
                     }
-                    if (canISelectIt) {
+
+                    invalidate();
+                    if (canISelectItInDoNextStep) {
                         break;
                     }
                 }
 
-                if (canISelectIt) {
+                if (canISelectItInDoNextStep) {
                     break;
                 }
             }
@@ -657,12 +732,26 @@ public class DotBoxGame extends View {
             }
 
             String message = "";
-            if (aCount > bCount)
+            ((Activity)context).stopService(new Intent(context, SoundService.class));
+            if (aCount > bCount) {
+                soundPlayer.playWinSound();
                 message = "تبریک! شما برنده شدید.";
-            else if (aCount < bCount)
+            }
+            else if (aCount < bCount) {
+                soundPlayer.playLooseSound();
                 message = "تبریک! بازی خوبی بود ولی حریفتان برنده بازی شده است.";
-            else if (aCount == bCount)
+            }
+            else if (aCount == bCount) {
+                soundPlayer.playEqualSound();
                 message = "تبریک! بازی خوبی بود و شما باهم مساوی شدید.";
+            }
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    // Actions to do after 1 seconds
+                    ((Activity)context).startService(new Intent(context, SoundService.class));
+                }
+            }, 1000);
 
 //            String message = "شما برنده بازی شدید!";
 //            MyDialog myDialog = new MyDialog(message);
@@ -761,7 +850,7 @@ public class DotBoxGame extends View {
     }
 
     private void touch_start(float x, float y) {
-        Line currentLine = null;
+        currentLine = null;
         if (!isGameFinished) {
             boolean isItMyTurn = false;
             for (Line line : lines.getList()) {
@@ -788,19 +877,19 @@ public class DotBoxGame extends View {
             }
 
             if (currentLine != null) {
-                if (!isSinglePlayerMode) {
-                    if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
-                        this.hubConnection.start().blockingAwait();
-                    if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
-                        try {
-                            this.hubConnection.send("SelectALine", helper.getUserUniqueId(), helper.getUsername(), gameSessionViewId, currentLine.getIndex());
-                        } catch (Exception ex) {
-                            helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                if (!currentLine.getIsSelected()) {
+                    if (!isSinglePlayerMode) {
+                        if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+                            this.hubConnection.start().blockingAwait();
+                        if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+                            try {
+                                this.hubConnection.send("SelectALine", helper.getUserUniqueId(), helper.getUsername(), gameSessionViewId, currentLine.getIndex());
+                            } catch (Exception ex) {
+                                helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                            }
                         }
                     }
-                }
 
-                if (!currentLine.getIsSelected()) {
                     currentLine.setOwner("1");
                     currentLine.setIsSelected(true);
                     currentLine.getPaint().setColor(Color.parseColor(ALineColor));
@@ -814,13 +903,27 @@ public class DotBoxGame extends View {
                         }
                     }
 
+                    if (isItMyTurn){
+                        soundPlayer.playBoxSelectionSound();
+                    } else {
+                        soundPlayer.playHit1Sound();
+                    }
+
 //                        CheckIfGameIsFinished();
 
                     if (!isItMyTurn) {
                         if (isSinglePlayerMode) {
-//                                CheckIfGameIsFinished();
-                            doNextStep(currentLine);
-//                                CheckIfGameIsFinished();
+                            ChangeTurn("B");
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    // Actions to do after 10 seconds
+                                    soundPlayer.playHit2Sound();
+                                    doNextStep(currentLine);
+                                    ChangeTurn("A");
+                                }
+                            }, 500);
+
                         } else if (!isSinglePlayerMode) {
 //                                CheckIfGameIsFinished();
                             lastLineDrawn = null;
@@ -859,7 +962,7 @@ public class DotBoxGame extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isSinglePlayerMode || (!isSinglePlayerMode && isItMyTurn)) {
+        if ((isSinglePlayerMode && isItMyTurn) || (!isSinglePlayerMode && isItMyTurn)) {
             float x = event.getX();
             float y = event.getY();
 

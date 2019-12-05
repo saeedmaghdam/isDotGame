@@ -2,6 +2,7 @@ package com.iser.isdotgame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startService(new Intent(this, SoundService.class));
 
         helper = new Helper(this);
 
@@ -124,5 +127,24 @@ public class MainActivity extends AppCompatActivity {
 //        linearLayout = findViewById(R.id.linearLayout);
 //        MyBoard myBoard = new MyBoard(this);
 //        linearLayout.addView(myBoard);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //stop service and stop music
+        stopService(new Intent(this, SoundService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        stopService(new Intent(this, SoundService.class));
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume(){
+        startService(new Intent(this, SoundService.class));
+        super.onResume();
     }
 }

@@ -30,6 +30,8 @@ public class LookingCompetitorActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lookingcompetitoractivity);
 
+        startService(new Intent(this, SoundService.class));
+
         Button buttonTest = findViewById(R.id.test);
         buttonTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,5 +163,24 @@ public class LookingCompetitorActivity extends BaseActivity {
 
     private void CheckFields(){
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        //stop service and stop music
+        stopService(new Intent(this, SoundService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        stopService(new Intent(this, SoundService.class));
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume(){
+        startService(new Intent(this, SoundService.class));
+        super.onResume();
     }
 }

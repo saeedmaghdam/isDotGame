@@ -1,8 +1,8 @@
-package com.huhx0015.hxaudio.builder;
+package com.iser.isdotgame;
 
 import android.content.Context;
-import com.huhx0015.hxaudio.audio.HXSound;
-import com.huhx0015.hxaudio.utils.HXLog;
+import com.iser.isdotgame.HXSound;
+import com.iser.isdotgame.HXLog;
 
 /** -----------------------------------------------------------------------------------------------
  *  [HXSoundBuilder] CLASS

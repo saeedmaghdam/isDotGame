@@ -2,6 +2,7 @@ package com.iser.isdotgame;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.percentlayout.widget.PercentRelativeLayout;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -35,6 +36,8 @@ public class MultiPlayingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_playing);
+
+        startService(new Intent(this, SoundService.class));
 
 //        helper = new Helper(getApplicationContext());
         helper = new Helper(this);
@@ -76,7 +79,8 @@ public class MultiPlayingActivity extends BaseActivity {
         TextView player1 = findViewById(R.id.myName);
         TextView player2 = findViewById(R.id.compatitorName);
         if (!TextUtils.isEmpty(getName())){
-            player1.setText(getName());
+//            player1.setText(getName());
+            player1.setText("شما");
         }
         else {
             player1.setText("شما");
@@ -87,21 +91,57 @@ public class MultiPlayingActivity extends BaseActivity {
         else {
             player2.setText("رقیب");
         }
+
+//        PercentRelativeLayout playersInfoLayout = findViewById(R.id.playersInfoLayout);
+//        playersInfoLayout.invalidate();
     }
 
-    private void ChangeTurn(String player){
-        View player1Line = findViewById(R.id.player1Line);
-        View player2Line = findViewById(R.id.player2Line);
+//    private void ChangeTurn(String player){
+////        runOnUiThread(new Runnable() {
+////            @Override
+////            public void run() {
+////
+////            }
+////        });
+//
+//        View player1Line = findViewById(R.id.player1Line);
+//        View player2Line = findViewById(R.id.player2Line);
+//
+//        switch (player.toLowerCase()){
+//            case "a":
+//                player1Line.setVisibility(VISIBLE);
+//                player2Line.setVisibility(INVISIBLE);
+//                break;
+//            case "b":
+//                player1Line.setVisibility(INVISIBLE);
+//                player2Line.setVisibility(VISIBLE);
+//                break;
+//        }
+//    }
 
-        switch (player.toLowerCase()){
-            case "a":
-                player1Line.setVisibility(VISIBLE);
-                player2Line.setVisibility(INVISIBLE);
-                break;
-            case "b":
-                player1Line.setVisibility(INVISIBLE);
-                player2Line.setVisibility(VISIBLE);
-                break;
-        }
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        //stop service and stop music
+        stopService(new Intent(this, SoundService.class));
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        stopService(new Intent(this, SoundService.class));
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume(){
+        startService(new Intent(this, SoundService.class));
+        super.onResume();
     }
 }

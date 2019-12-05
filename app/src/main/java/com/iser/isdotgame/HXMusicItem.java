@@ -1,4 +1,4 @@
-package com.huhx0015.hxaudio.model;
+package com.iser.isdotgame;
 
 /** -----------------------------------------------------------------------------------------------
  *  [HXMusicItem] CLASS

@@ -1,6 +1,6 @@
-package com.huhx0015.hxaudio.interfaces;
+package com.iser.isdotgame;
 
-import com.huhx0015.hxaudio.model.HXMusicItem;
+import com.iser.isdotgame.HXMusicItem;
 
 /** -----------------------------------------------------------------------------------------------
  *  [HXMusicListener] CLASS

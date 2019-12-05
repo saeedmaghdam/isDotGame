@@ -98,7 +98,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingTop="5dp">
+        android:background="#8fff"
+        android:paddingTop="20dp"
+        android:paddingBottom="15dp">
 
         <LinearLayout
             android:id="@+id/player1AvatarLayout"
@@ -135,7 +137,7 @@
                 android:id="@+id/compatitorName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="اندروید"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="#29004d"
                 android:textSize="20dp"
@@ -184,7 +186,7 @@
                 android:id="@+id/myName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="شما"
+                android:text=""
                 android:textAlignment="center"
                 android:textColor="#29004d"
                 android:textSize="20dp"

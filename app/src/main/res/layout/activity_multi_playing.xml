@@ -98,7 +98,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingTop="5dp">
+        android:background="#8fff"
+        android:paddingTop="20dp"
+        android:paddingBottom="15dp">
 
         <LinearLayout
             android:id="@+id/player1AvatarLayout"

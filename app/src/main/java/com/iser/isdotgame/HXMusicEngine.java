@@ -7,9 +7,9 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import com.huhx0015.hxaudio.interfaces.HXMusicEngineListener;
-import com.huhx0015.hxaudio.model.HXMusicItem;
-import com.huhx0015.hxaudio.utils.HXLog;
+import com.iser.isdotgame.HXMusicEngineListener;
+import com.iser.isdotgame.HXMusicItem;
+import com.iser.isdotgame.HXLog;
 
 /** -----------------------------------------------------------------------------------------------
  *  [HXMusicEngine] CLASS

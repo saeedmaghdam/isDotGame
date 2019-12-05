@@ -2,8 +2,8 @@ package com.iser.isdotgame;
 
 import android.content.Context;
 import android.os.Build;
-import com.huhx0015.hxaudio.builder.HXSoundBuilder;
-import com.huhx0015.hxaudio.utils.HXLog;
+import com.iser.isdotgame.HXSoundBuilder;
+import com.iser.isdotgame.HXLog;
 import java.util.List;
 import java.util.Vector;
 
