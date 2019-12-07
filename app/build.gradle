@@ -49,4 +49,28 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.google.code.gson:gson:2.6.1'
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+
+//    // jUnit
+//    androidTestImplementation 'androidx.test:runner:1.1.0'
+//    androidTestImplementation 'androidx.test:rules:1.1.0'
+//    // Optional -- Hamcrest library
+//    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
+//    // Optional -- UI testing with Espresso
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+//    // Optional -- UI testing with UI Automator
+//    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+//
+//    // ----------------------------------------
+//
+////    // Instrumentation tests
+////    androidTestImplementation "com.android.support.test:runner:$supportTestRunnerVersion"
+////// To use assertThat syntax
+////    androidTestImplementation "org.assertj:assertj-core:$assertJVersion"
+//
+//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+//    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
+//    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+//    androidTestImplementation "org.assertj:assertj-core:2.9.1"
+//    // End of jUnit
 }

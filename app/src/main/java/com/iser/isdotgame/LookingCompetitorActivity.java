@@ -42,6 +42,7 @@ public class LookingCompetitorActivity extends BaseActivity {
                 if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED){
                     // Rise my hand!
                     hubConnection.send("Test", helper.getUserUniqueId());
+                    helper.Sleep();
                 }
             }
         });
@@ -110,6 +111,7 @@ public class LookingCompetitorActivity extends BaseActivity {
             // Rise my hand!
             try {
                 hubConnection.send("RiseMyHand", helper.getUserUniqueId(), helper.getUsername());
+                helper.Sleep();
             } catch (Exception ex){
                 helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
             }

@@ -23,9 +23,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startService(new Intent(this, SoundService.class));
-
         helper = new Helper(this);
+
+        String[] hardwareIds = {
+                "2dc0ea11881ca812" // 26
+                , "f0950fda97671ef5" // tablet
+                , "6605900c75fc3582" // Somayeh
+                , "e7662c5dd5ef424" // Ahmad
+                , "d5820570cd5b16b7" //Ahmad's family
+        };
+
+        String currentHardwareId = helper.getUserUniqueId();
+        boolean isRegistered = false;
+        for(String hardwareId : hardwareIds){
+            if (currentHardwareId.toLowerCase().equals(hardwareId.toLowerCase())){
+                isRegistered = true;
+                break;
+            }
+        }
+        if (!isRegistered){
+            Intent i = new Intent(getApplicationContext(), LicenseErrorActivity.class);
+            startActivity(i);
+            return;
+        }
+
+        startService(new Intent(this, SoundService.class));
 
         hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
 //        hubConnection = HubConnectionBuilder.create("http://192.168.0.115:54343/mainhub").build();

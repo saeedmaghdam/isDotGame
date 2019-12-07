@@ -2,6 +2,7 @@ package com.iser.isdotgame;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.SystemClock;
 import android.provider.Settings.Secure;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -36,7 +37,8 @@ public class Helper {
 //        messageTv.setText(message);
 //        d.setTitle(title);
 //        d.show();
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+//        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
     public void showMessage(String message)
@@ -48,8 +50,10 @@ public class Helper {
         return "";
     }
 
-//    private static String baseUrl = "http://192.168.1.253:54343/";
-    private static String baseUrl = "http://192.168.0.115:54343/";
+//        private static String baseUrl = "http://192.168.1.253:54343/";
+//    private static String baseUrl = "http://poldash.ir/";
+//private static String baseUrl = "http://192.168.0.115:54343/";
+    private static String baseUrl = "http://2.187.35.169:5000/";
 
     public String getHubUrl(){
 //        return "http://poldash.ir/mainhub";
@@ -61,5 +65,9 @@ public class Helper {
 //        return "http://poldash.ir/mainhub";
 //        return "http://192.168.0.115:54343/mainhub";
         return baseUrl + "FileUpload/";
+    }
+
+    public void Sleep(){
+        SystemClock.sleep(100);
     }
 }

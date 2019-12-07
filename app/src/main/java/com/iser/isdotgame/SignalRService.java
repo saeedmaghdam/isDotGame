@@ -46,6 +46,7 @@ public class SignalRService {
                 if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                     try {
                         hubConnection.send("Ack", helper.getUserUniqueId(), helper.getUsername());
+                        helper.Sleep();
                     } catch (Exception ex) {
                         helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                     }

@@ -111,47 +111,92 @@ public class ChargeActivity extends BaseActivity {
 //        hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
         hubConnection = service.getHubConnection();
 
-        final AlertDialog.Builder alert = new AlertDialog.Builder(ChargeActivity.this);
-        View mView = getLayoutInflater().inflate(R.layout.custom_dialog,null);
-        final EditText txt_inputText = (EditText)mView.findViewById(R.id.txt_input);
-        Button btn_cancel = (Button)mView.findViewById(R.id.btn_cancel);
-        Button btn_okay = (Button)mView.findViewById(R.id.btn_okay);
-        alert.setView(mView);
-        final AlertDialog alertDialog = alert.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
-        btn_okay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
-                    try {
-                        hubConnection.start().blockingAwait();
-                    } catch (Exception ex) {
-                        helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
-                    }
-                }
-                if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
-                    try {
-                        hubConnection.send("VerifyCode", helper.getUserUniqueId(), helper.getUsername(), txt_inputText.getText().toString());
-                    } catch (Exception ex) {
-                        helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
-                    }
-                }
-
-                alertDialog.dismiss();
-            }
-        });
+//        final AlertDialog.Builder alert = new AlertDialog.Builder(ChargeActivity.this);
+//        View mView = getLayoutInflater().inflate(R.layout.custom_dialog,null);
+//        final EditText txt_inputText = (EditText)mView.findViewById(R.id.txt_input);
+//        Button btn_cancel = (Button)mView.findViewById(R.id.btn_cancel);
+//        Button btn_okay = (Button)mView.findViewById(R.id.btn_okay);
+//        alert.setView(mView);
+//        final AlertDialog alertDialog = alert.create();
+//        alertDialog.setCanceledOnTouchOutside(false);
+//        btn_cancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                alertDialog.dismiss();
+//            }
+//        });
+//        btn_okay.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
+//                    try {
+//                        hubConnection.start().blockingAwait();
+//                    } catch (Exception ex) {
+//                        helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+//                    }
+//                }
+//                if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+//                    try {
+//                        hubConnection.send("VerifyCode", helper.getUserUniqueId(), helper.getUsername(), txt_inputText.getText().toString());
+//                    } catch (Exception ex) {
+//                        helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+//                    }
+//                }
+//
+//                alertDialog.dismiss();
+//            }
+//        });
 
 //        alertDialog.show();
 
-        hubConnection.on("TextMessageSent", () -> {
+        hubConnection.on("TextMessageSent", (code) -> {
+//            alertDialog.set
+            ChargeActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(ChargeActivity.this);
+                    View mView = getLayoutInflater().inflate(R.layout.custom_dialog,null);
+                    final EditText txt_inputText = (EditText)mView.findViewById(R.id.txt_input);
+                    txt_inputText.setText(code);
+                    Button btn_cancel = (Button)mView.findViewById(R.id.btn_cancel);
+                    Button btn_okay = (Button)mView.findViewById(R.id.btn_okay);
+                    alert.setView(mView);
+                    final AlertDialog alertDialog = alert.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    btn_cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.dismiss();
+                        }
+                    });
+                    btn_okay.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED) {
+                                try {
+                                    hubConnection.start().blockingAwait();
+                                } catch (Exception ex) {
+                                    helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                                }
+                            }
+                            if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+                                try {
+                                    hubConnection.send("VerifyCode", helper.getUserUniqueId(), helper.getUsername(), txt_inputText.getText().toString());
+                                    helper.Sleep();
+                                } catch (Exception ex) {
+                                    helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
+                                }
+                            }
 
-        });
+                            alertDialog.dismiss();
+                        }
+                    });
+
+                    alertDialog.show();
+//                    helper.showMessage(code);
+                }
+            });
+        }, String.class);
 
         hubConnection.on("Test", () -> {
 //            Message message = new Message();
@@ -255,6 +300,7 @@ public class ChargeActivity extends BaseActivity {
                     if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                         try {
                             hubConnection.send("UpdateName", helper.getUserUniqueId(), helper.getUsername(), name);
+                            helper.Sleep();
                         } catch (Exception ex) {
                             helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                         }
@@ -277,6 +323,7 @@ public class ChargeActivity extends BaseActivity {
                 if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                     try {
                         hubConnection.send("Test");
+                        helper.Sleep();
                     } catch (Exception ex) {
                         helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                     }
@@ -296,7 +343,8 @@ public class ChargeActivity extends BaseActivity {
                     if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                         try {
                             hubConnection.send("UpdatePhone", helper.getUserUniqueId(), helper.getUsername(), phone);
-                            alertDialog.show();
+                            helper.Sleep();
+//                            alertDialog.show();
                         } catch (Exception ex) {
                             helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                         }
@@ -712,6 +760,7 @@ public class ChargeActivity extends BaseActivity {
                         if (hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                             try {
                                 hubConnection.send("UpdateAvatarFileName", helper.getUserUniqueId(), helper.getUsername(), destFileName);
+                                helper.Sleep();
                                 setAvatar(destFileName);
                             } catch (Exception ex) {
                                 helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
@@ -995,9 +1044,11 @@ public class ChargeActivity extends BaseActivity {
                     try {
                         if (isPaymentSuccess) {
                             hubConnection.send("Charge", helper.getUserUniqueId(), helper.getUsername(), refID, coins, amount);
+                            helper.Sleep();
                         }
                         else {
                             hubConnection.send("Charge", helper.getUserUniqueId(), helper.getUsername(), refID, "error", amount);
+                            helper.Sleep();
                         }
                     } catch (Exception ex) {
                         helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");

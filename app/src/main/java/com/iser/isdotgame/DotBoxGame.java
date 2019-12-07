@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -158,19 +159,66 @@ public class DotBoxGame extends View {
             });
 
             this.hubConnection.on("SelectALine", (selectedLineByCompetitorIndex) -> {
-                soundPlayer.playHit2Sound();
+//            ((Activity)context).runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    soundPlayer.playHit2Sound();
+//                    Log.d("ooooooooo", String.valueOf(selectedLineByCompetitorIndex));
+//                    Line currentLine = null;
+//                    for (Line line : lines.getList()) {
+//                        if (line.getIndex() == selectedLineByCompetitorIndex) {
+//                            currentLine = line;
+//                            Log.d("ooooooooo", "Found a line");
+//                            break;
+//                        }
+//                    }
+//
+//                    if (currentLine != null) {
+//                        Log.d("ooooooooo", "Line is not null!");
+//                        lastLineDrawn = currentLine;
+//                        if (!currentLine.getIsSelected()) {
+//                            Log.d("ooooooooo", "Line is not selected currently");
+//                            currentLine.setOwner("2");
+//                            currentLine.setIsSelected(true);
+//                            currentLine.getPaint().setColor(Color.parseColor(BLineColor));
+//                            for (Box box : boxes.getBoxes(currentLine)) {
+//                                box.updateLine(currentLine);
+//                                if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
+////                                isItMyTurn = true;
+//                                    Log.d("ooooooooo", "Box founded!");
+//                                    box.getPaint().setColor(Color.parseColor(BBoxColor));
+//                                    box.setOwner("2");
+//                                }
+//                            }
+//
+////                        this.postInvalidate();
+//                        }
+//                    }
+//
+//                    postInvalidate();
+//                }
+//            });
 
+
+
+
+
+                soundPlayer.playHit2Sound();
+//                Log.d("ooooooooo", String.valueOf(selectedLineByCompetitorIndex));
                 Line currentLine = null;
                 for (Line line : lines.getList()) {
                     if (line.getIndex() == selectedLineByCompetitorIndex) {
                         currentLine = line;
+//                        Log.d("ooooooooo", "Found a line");
                         break;
                     }
                 }
 
                 if (currentLine != null) {
+//                    Log.d("ooooooooo", "Line is not null!");
                     lastLineDrawn = currentLine;
                     if (!currentLine.getIsSelected()) {
+//                        Log.d("ooooooooo", "Line is not selected currently");
                         currentLine.setOwner("2");
                         currentLine.setIsSelected(true);
                         currentLine.getPaint().setColor(Color.parseColor(BLineColor));
@@ -178,16 +226,22 @@ public class DotBoxGame extends View {
                             box.updateLine(currentLine);
                             if (box.getLine1IsSelected() && box.getLine2IsSelected() && box.getLine3IsSelected() && box.getLine4IsSelected()) {
 //                                isItMyTurn = true;
+                                Log.d("ooooooooo", "Box founded!");
                                 box.getPaint().setColor(Color.parseColor(BBoxColor));
                                 box.setOwner("2");
                             }
                         }
 
-                        this.postInvalidate();
+//                        this.postInvalidate();
                     }
                 }
+
+
+                postInvalidate();
+//                DotBoxGame.this.invalidate();
+//                DotBoxGame.this.drawLayout();
 //                this.invalidate();
-                //draw(canvas);
+//                draw(canvas);
             }, Integer.class);
 
             this.hubConnection.on("WhoAmI", (userViewId) -> {
@@ -239,6 +293,7 @@ public class DotBoxGame extends View {
 //                    // Who's Turn Is It?
 //                    this.hubConnection.send("WhosTurn", helper.getUserUniqueId(), helper.getUsername(), this.gameSessionViewId);
                     this.hubConnection.send("Init", helper.getUserUniqueId(), helper.getUsername(), this.gameSessionViewId);
+                    helper.Sleep();
                 } catch (Exception ex){
                     helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                 }
@@ -884,6 +939,7 @@ public class DotBoxGame extends View {
                         if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                             try {
                                 this.hubConnection.send("SelectALine", helper.getUserUniqueId(), helper.getUsername(), gameSessionViewId, currentLine.getIndex());
+                                helper.Sleep();
                             } catch (Exception ex) {
                                 helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                             }
@@ -939,6 +995,7 @@ public class DotBoxGame extends View {
                             if (this.hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
                                 try {
                                     this.hubConnection.send("IPlayedMyTurn", helper.getUserUniqueId(), helper.getUsername(), gameSessionViewId, currentLine.getIndex());
+                                    helper.Sleep();
                                 } catch (Exception ex) {
                                     helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                                 }
