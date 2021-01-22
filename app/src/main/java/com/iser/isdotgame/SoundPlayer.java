@@ -189,6 +189,10 @@ public class SoundPlayer {
         this.context = context;
     }
 
+    public void stop() {
+        HXMusic.stop();
+    }
+
     public void playHit1Sound() {
         HXSound.sound()
                 .load(R.raw.hit1) // Sets the resource of the sound effect. [REQUIRED]
@@ -226,8 +230,20 @@ public class SoundPlayer {
 
     public void playBoxSelectionSound() {
         HXSound.sound()
-                .load(R.raw.boxselection) // Sets the resource of the sound effect. [REQUIRED]
+                .load(R.raw.box) // Sets the resource of the sound effect. [REQUIRED]
                 .looped(false)                // Sets the sound effect to be looped. [OPTIONAL]
+                .play(context);
+    }
+
+    public void playInBackground(){
+        HXMusic.music()
+                .load(R.raw.background)    // Sets the resource of the song. [REQUIRED]
+                .title("Background sound")    // Sets the title of the song. [OPTIONAL]
+                .artist("Anonymous")     // Sets the artist of the song. [OPTIONAL]
+//                .date("January 1, 1998")     // Sets the date of the song. [OPTIONAL]
+//                .at(5)                       // Sets the position for where the song should start. [OPTIONAL]
+                .gapless(true)               // Enables gapless playback for this song. [OPTIONAL]
+                .looped(true)                // Sets the song to be looped. [OPTIONAL]
                 .play(context);
     }
 }

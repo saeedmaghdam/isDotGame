@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.microsoft.signalr.HubConnection;
+import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 
 import java.util.ArrayList;
@@ -112,7 +113,6 @@ public class DotBoxGame extends View {
 
         this.gameSessionViewId = gameSessionId;
         this.helper = new Helper(context);
-
         if (!isSinglePlayerMode) {
 //            this.hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
 //            this.hubConnection = hubConnection;
@@ -126,7 +126,9 @@ public class DotBoxGame extends View {
             });
 
 //        hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
-            this.hubConnection = service.getHubConnection();
+//            this.hubConnection = service.getHubConnection();
+//            Platform.loadPlatformComponent(new AndroidPlatformComponent());
+            this.hubConnection = HubConnectionBuilder.create(this.helper.getHubUrl()).build();
 
             this.hubConnection.on("ItsMyTurn", () -> {
 //                Line currentLine = null;
@@ -152,6 +154,7 @@ public class DotBoxGame extends View {
 //                    }
 //                }
 
+                Log.d("ooooooo", "IT'S MY TURN");
                 isItMyTurn = true;
 //                ChangeTurn("A");
 
@@ -202,23 +205,24 @@ public class DotBoxGame extends View {
 
 
 
-
+                Log.d("ooooooo", "SELECT A LINE");
+                Log.d("ooooooo", "Looking for the line with index " + String.valueOf(selectedLineByCompetitorIndex));
                 soundPlayer.playHit2Sound();
 //                Log.d("ooooooooo", String.valueOf(selectedLineByCompetitorIndex));
                 Line currentLine = null;
                 for (Line line : lines.getList()) {
                     if (line.getIndex() == selectedLineByCompetitorIndex) {
                         currentLine = line;
-//                        Log.d("ooooooooo", "Found a line");
+                        Log.d("ooooooooo", "Found a line");
                         break;
                     }
                 }
 
                 if (currentLine != null) {
-//                    Log.d("ooooooooo", "Line is not null!");
+                    Log.d("ooooooooo", "Line is not null!");
                     lastLineDrawn = currentLine;
                     if (!currentLine.getIsSelected()) {
-//                        Log.d("ooooooooo", "Line is not selected currently");
+                        Log.d("ooooooooo", "A new line selected");
                         currentLine.setOwner("2");
                         currentLine.setIsSelected(true);
                         currentLine.getPaint().setColor(Color.parseColor(BLineColor));
@@ -298,6 +302,12 @@ public class DotBoxGame extends View {
                     helper.showMessage("در حال حاضر ارتباط با سرور قطع می باشد!");
                 }
             }
+
+            Log.d("ooooooooooo", "onCreate");
+            if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+                Log.d("ooooooooooo", "Disconnected!");
+            else
+                Log.d("ooooooooooo", "Connected!");
         }
     }
 
@@ -314,9 +324,11 @@ public class DotBoxGame extends View {
 //        });
         if (!isSinglePlayerMode || 1==1) {
             if (player.toLowerCase().equals("a")) {
+                this.isItMyTurn = true;
                 player1Line.setVisibility(VISIBLE);
                 player2Line.setVisibility(INVISIBLE);
             } else if (player.toLowerCase().equals("b")) {
+                this.isItMyTurn = false;
                 player1Line.setVisibility(INVISIBLE);
                 player2Line.setVisibility(VISIBLE);
             }
@@ -466,7 +478,6 @@ public class DotBoxGame extends View {
 
 //        PercentRelativeLayout playersInfoLayout = ((Activity)context).findViewById(R.id.playersInfoLayout);
 //        playersInfoLayout.invalidate();
-
     }
 
     private void doNextStep(Line line){
@@ -787,7 +798,7 @@ public class DotBoxGame extends View {
             }
 
             String message = "";
-            ((Activity)context).stopService(new Intent(context, SoundService.class));
+//            ((Activity)context).stopService(new Intent(context, SoundService.class));
             if (aCount > bCount) {
                 soundPlayer.playWinSound();
                 message = "تبریک! شما برنده شدید.";
@@ -804,7 +815,7 @@ public class DotBoxGame extends View {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     // Actions to do after 1 seconds
-                    ((Activity)context).startService(new Intent(context, SoundService.class));
+//                    ((Activity)context).startService(new Intent(context, SoundService.class));
                 }
             }, 1000);
 
@@ -1019,6 +1030,8 @@ public class DotBoxGame extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (this.hubConnection.getConnectionState() == HubConnectionState.DISCONNECTED)
+            Log.d("ooooooooo", "It's disconnected already!");
         if ((isSinglePlayerMode && isItMyTurn) || (!isSinglePlayerMode && isItMyTurn)) {
             float x = event.getX();
             float y = event.getY();

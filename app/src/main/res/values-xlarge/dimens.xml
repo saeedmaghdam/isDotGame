@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <dimen name="text_size">20dp</dimen>
+   <dimen name="main_button_width">380dp</dimen>
+   <dimen name="main_button_height">91dp</dimen>
+   <dimen name="main_padding_top">190dp</dimen>
+   <dimen name="main_button_margin_top">20dp</dimen>
+   <dimen name="setting_button_wh">65dp</dimen>
+</resources>

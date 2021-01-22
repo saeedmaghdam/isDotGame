@@ -11,7 +11,10 @@ import android.widget.Button;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 
-public class MainActivity extends AppCompatActivity {
+import io.socket.client.IO;
+import io.socket.client.Socket;
+
+public class MainActivity extends BaseActivity {
 //    LinearLayout linearLayout;
     Helper helper;
     HubConnection hubConnection;
@@ -26,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         helper = new Helper(this);
 
         String[] hardwareIds = {
-                "2dc0ea11881ca812" // 26
+                "1dc0ea11881ca308" // 25
+                , "2dc0ea11881ca812" // 26
                 , "f0950fda97671ef5" // tablet
                 , "6605900c75fc3582" // Somayeh
                 , "e7662c5dd5ef424" // Ahmad
@@ -99,6 +103,14 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putBinder("hubConnection", new ObjectWrapperForBinder(hubConnection));
                 Intent i = new Intent(getApplicationContext(), ChargeActivity.class).putExtras(bundle);
                 startActivity(i);
+            }
+        });
+
+        Button btnLeague = (Button)findViewById(R.id.btnEnrollLeague);
+        btnLeague.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helper.showMessage("سلام");
             }
         });
 

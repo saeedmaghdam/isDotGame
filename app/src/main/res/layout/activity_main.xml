@@ -6,42 +6,50 @@
     android:layout_height="match_parent"
     android:background="@drawable/mainbackground"
     tools:context=".MainActivity"
-    android:paddingTop="130dp">
+    android:paddingTop="@dimen/main_padding_top">
 
-    <Button
+    <android.widget.Button
         android:id="@+id/btnSinglePlayer"
-        android:layout_width="230dp"
-        android:layout_height="55dp"
-        android:background="@drawable/btnsingleplayer"
+        android:layout_width="@dimen/main_button_width"
+        android:layout_height="@dimen/main_button_height"
+        android:background="@drawable/custom_single_player_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-    <Button
+    <android.widget.Button
         android:id="@+id/btnStartMultiPlayer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btnmultiplayer"
+        android:layout_width="@dimen/main_button_width"
+        android:layout_height="@dimen/main_button_height"
+        android:background="@drawable/custom_multi_player_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnSinglePlayer"
-        android:layout_marginTop="20dp"/>
-    <Button
+        android:layout_marginTop="@dimen/main_button_margin_top"/>
+    <android.widget.Button
         android:id="@+id/btnEnrollLeague"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btnenrollleague"
+        android:layout_width="@dimen/main_button_width"
+        android:layout_height="@dimen/main_button_height"
+        android:background="@drawable/custom_league_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnStartMultiPlayer"
-        android:layout_marginTop="20dp"/>
-    <Button
+        android:layout_marginTop="@dimen/main_button_margin_top"/>
+    <android.widget.Button
         android:id="@+id/btnChargeAccount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btnchargeaccount"
+        android:layout_width="@dimen/main_button_width"
+        android:layout_height="@dimen/main_button_height"
+        android:background="@drawable/custom_buy_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnEnrollLeague"
-        android:layout_marginTop="20dp"/>
-
+        android:layout_marginTop="@dimen/main_button_margin_top"/>
+    <android.widget.Button
+        android:id="@+id/btnsetting"
+        android:layout_width="@dimen/setting_button_wh"
+        android:layout_height="@dimen/setting_button_wh"
+        android:background="@drawable/custom_setting_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

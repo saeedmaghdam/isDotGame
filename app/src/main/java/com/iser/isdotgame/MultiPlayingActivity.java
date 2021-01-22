@@ -31,13 +31,16 @@ public class MultiPlayingActivity extends BaseActivity {
     SignalRService service;
     Handler handler;
     String compatitorName;
+    SoundPlayer soundPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_playing);
 
-        startService(new Intent(this, SoundService.class));
+//        startService(new Intent(this, SoundService.class));
+        soundPlayer = new SoundPlayer(this);
+        soundPlayer.playInBackground();
 
 //        helper = new Helper(getApplicationContext());
         helper = new Helper(this);
@@ -129,19 +132,22 @@ public class MultiPlayingActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         //stop service and stop music
-        stopService(new Intent(this, SoundService.class));
+        soundPlayer.stop();
+//        stopService(new Intent(this, SoundService.class));
         super.onDestroy();
     }
 
     @Override
     protected void onPause(){
-        stopService(new Intent(this, SoundService.class));
+//        stopService(new Intent(this, SoundService.class));
+        soundPlayer.stop();
         super.onPause();
     }
 
     @Override
     protected void onResume(){
-        startService(new Intent(this, SoundService.class));
+        soundPlayer.playInBackground();
+//        startService(new Intent(this, SoundService.class));
         super.onResume();
     }
 }
